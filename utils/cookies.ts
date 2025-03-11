@@ -1,5 +1,3 @@
-// utils/cookies.ts
-
 /**
  * Gets a cookie value by name
  * @param name The name of the cookie to retrieve

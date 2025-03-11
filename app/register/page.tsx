@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import { axiosInstance } from "@/lib/api/axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,29 +16,28 @@ export default function RegisterPage() {
       password: '',
     });
   
-    const [loading, setLoading] = useState(false);
-    const router = useRouter()
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          setFormData((prevData) => ({
-            ...prevData,
-            [e.target.name]: e.target.value,
-          }));
-        };
+  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData((prevData) => ({
+          ...prevData,
+          [e.target.name]: e.target.value,
+        }));
+      };
 
   const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-    
         try {
-          const response = await axios.post('https://hackathon.8848digitalerp.com/api/method/hackathon.API.register_api.register', {
+          const response = await axiosInstance.post('/api/method/hackathon.API.register_api.register', {
             email: formData.email,
             pwd: formData.password,
             first_name: formData.name,
             role: formData.role,
           });
-    
+          
           if (response.status === 200) {
-            router.push('/login')
+            router.push('/login')          
           } else {
            console.error(response);
           }

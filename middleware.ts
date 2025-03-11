@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -13,12 +12,10 @@ export function middleware(request: NextRequest) {
   const isAuthenticated = token && apiKey && full_name !== "Guest";
 
   if (isAuthenticated) {
-    // Redirect authenticated users from public routes to dashboard
     if (publicRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   } else {
-    // Redirect unauthenticated users to /login for all non-public routes
     if (!publicRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL('/login', request.url));
     }

@@ -1,21 +1,33 @@
 'use client';
 
 import Navbar from "@/components/Navbar";
-import { ErrorBoundary } from "next/dist/client/components/error-boundary";
+import { Toaster } from "@/components/ui/sonner";
 import Error from "./Error";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { ErrorBoundary } from "next/dist/client/components/error-boundary";
+import { useEffect, useState } from "react";
 
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <></>
+    )
+  }
+
   return (
-    <AuthProvider>
-      <ErrorBoundary errorComponent={Error}>
-        <div>
-          <Navbar />
-          <main className="">{children}</main>
-        </div>
-      </ErrorBoundary>
-    </AuthProvider>
+    <ErrorBoundary errorComponent={Error}>
+      <div>
+        <Navbar />
+        <main className="">{children}</main>
+        <Toaster />
+      </div>
+    </ErrorBoundary>
   );
 };
 
