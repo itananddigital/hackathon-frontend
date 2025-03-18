@@ -7,10 +7,11 @@ const page = () => {
 
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative">
-      <SubmissionTimer />
+    // <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 relative">
+    //   {/* <SubmissionTimer /> */}
+    //   <SubmissionForm />
+    // </div>
       <SubmissionForm />
-    </div>
   );
 }
 

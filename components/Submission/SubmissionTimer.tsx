@@ -1,5 +1,5 @@
+import { Card, CardBody } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card';
 
 
 const SubmissionTimer = () => {
@@ -44,9 +44,9 @@ const SubmissionTimer = () => {
     return (
         <div className="absolute top-20 right-44">
             <Card className="bg-gray-900 border-gray-800 shadow-lg">
-                <CardContent className="p-2">
+                <CardBody className="p-2">
                     <p className="text-sm text-white">{timeLeft}</p>
-                </CardContent>
+                </CardBody>
             </Card>
         </div>
     )
