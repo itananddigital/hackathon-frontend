@@ -1,14 +1,8 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useUpload } from '@/hooks/useUpload';
 import { postFetcher } from '@/lib/api/swrFetcher';
 import { getCookie } from '@/utils/cookies';
-import { Pencil } from 'lucide-react';
+import { Button, Card, CardBody, CardHeader, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure, useToast } from "@chakra-ui/react";
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { KeyedMutator } from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { FormInput } from '../common/FormInput';
@@ -16,8 +10,8 @@ import { FormInput } from '../common/FormInput';
 const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> }) => {
     const currentUser = getCookie('email');
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isOpen, onClose, onOpen } = useDisclosure()
+    const toast = useToast()
 
     const { trigger, isMutating: updateDoc, error: updateError } = useSWRMutation(
         '/api/method/hackathon.API.user.update_user',
@@ -55,9 +49,10 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
                 bio: formData.bio,
             });
             mutate();
-            toast('Profile updated successfully');
+            toast({ title: 'Profile updated successfully' });
         } catch (err) {
-            toast('Failed to update profile', {
+            toast({
+                title: 'Failed to update profile',
                 description: 'Something went wrong',
             });
         }
@@ -73,19 +68,19 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
     // Handle avatar upload
     const uploadAvatar = async () => {
         if (!avatarFile) {
-            toast('Please select an image to upload');
+            toast({ title: 'Please select an image to upload' });
             return;
         }
         let url = null;
         try {
-            setIsUploading(true);
             const formData = new FormData();
             formData.append('file', avatarFile);
-            const res = await uploadCall({ formData });
+            const res = await uploadCall(formData);
             url = res.message.file_url;
-            setIsModalOpen(false);
+            onClose()
         } catch (err) {
-            toast('Failed to upload files', {
+            toast({
+                title: 'Failed to upload files',
                 description: err instanceof Error ? err.message : 'Upload failed',
             });
             return;
@@ -97,14 +92,13 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
                 user: currentUser,
             });
             mutate();
-            toast('Successfully updated profile');
+            toast({ title: 'Successfully updated profile' });
             setAvatarFile(null);
         } catch (err) {
-            toast('Failed to update profile', {
+            toast({
+                title: 'Failed to update profile',
                 description: 'Something went wrong',
             });
-        } finally {
-            setIsUploading(false);
         }
     };
 
@@ -112,9 +106,9 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
         <div className="min-h-screen  text-white flex items-center justify-center p-4">
             <Card className="w-full max-w-4xl bg-gray-800 border-gray-700 shadow-lg rounded-lg">
                 <CardHeader className="border-b border-gray-600 p-6">
-                    <CardTitle className="text-3xl font-bold text-white">My Profile</CardTitle>
+                    My Profile
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
+                <CardBody className="p-6 space-y-6">
                     <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                         <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-700">
                             <img
@@ -123,10 +117,10 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
                                 className="object-cover w-full h-full"
                             />
                             <button
-                                onClick={() => setIsModalOpen(true)}
+                                onClick={onOpen}
                                 className="absolute bottom-2 right-2  bg-opacity-70 rounded-full p-2 hover:bg-opacity-90 transition"
                             >
-                                <Pencil className="w-5 h-5 text-white" />
+                                {/* <Pencil className="w-5 h-5 text-white" /> */}
                             </button>
                         </div>
                         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,47 +182,43 @@ const ViewProfile = ({ data, mutate }: { data: any, mutate: KeyedMutator<any> })
                             {updateDoc ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
-                </CardContent>
+                </CardBody>
             </Card>
-
-            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="bg-gray-800 text-white border-gray-700">
-                    <DialogHeader>
-                        <DialogTitle>Upload New Avatar</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        <Label htmlFor="avatar-upload" className="text-gray-300">
-                            Select an image
-                        </Label>
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Upload New Avatar</ModalHeader>
+                    <ModalBody className="space-y-4">
+                        <Text color="gray.300">Select an image</Text>
                         <Input
                             id="avatar-upload"
                             type="file"
                             accept="image/*"
                             onChange={handleAvatarChange}
-                            disabled={isUploading}
-                            className="bg-gray-700 border-gray-600 text-white file:text-white"
                         />
-                    </div>
-                    <DialogFooter>
+                    </ModalBody>
+                    <ModalFooter>
                         <Button
                             variant="ghost"
                             onClick={() => {
                                 setAvatarFile(null);
-                                setIsModalOpen(false);
+                                onClose();
                             }}
-                            className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                            mr={3}
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={uploadAvatar}
-                            disabled={isUploading || !avatarFile}
+                            isLoading={isMutating}
+                            isDisabled={!avatarFile}
+                            colorScheme="brand"
                         >
-                            {isUploading ? 'Uploading...' : 'Upload'}
+                            Upload
                         </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </div>
     )
 }

@@ -5,8 +5,8 @@ import React from 'react';
 import useSWR from 'swr';
 import LoadingPage from '../common/Loading';
 import { getCookie } from '@/utils/cookies';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@chakra-ui/react"
+import { Card, CardContent, CardHeader, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
 
 const MyProject = () => {
@@ -38,9 +38,9 @@ const MyProject = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
           <Card className="w-full max-w-md bg-gray-800 border-gray-700 shadow-lg">
             <CardHeader className="border-b border-gray-700">
-              <CardTitle className="text-2xl font-bold text-white">
+              <CardHeader className="text-2xl font-bold text-white">
                 No Team Found
-              </CardTitle>
+              </CardHeader>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
               <p className="text-gray-300">
@@ -62,9 +62,9 @@ const MyProject = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
           <Card className="w-full max-w-md bg-gray-800 border-gray-700 shadow-lg">
             <CardHeader className="border-b border-gray-700">
-              <CardTitle className="text-2xl font-bold text-white">
+              <CardHeader className="text-2xl font-bold text-white">
                 No Themes Selected
-              </CardTitle>
+              </CardHeader>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
               <p className="text-gray-300">
@@ -83,9 +83,9 @@ const MyProject = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
         <Card className="w-full max-w-md bg-gray-800 border-gray-700 shadow-lg">
           <CardHeader className="border-b border-gray-700">
-            <CardTitle className="text-2xl font-bold text-white">
+            <CardHeader className="text-2xl font-bold text-white">
               Error
-            </CardTitle>
+            </CardHeader>
           </CardHeader>
           <CardContent className="pt-6">
             <p className="text-gray-300">{errorMessage}</p>
