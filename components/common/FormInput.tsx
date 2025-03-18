@@ -1,5 +1,5 @@
+import { Text } from '@chakra-ui/react'
 import React from 'react'
-import { Label } from '../ui/label'
 
 interface FormInputProps {
     label: string
@@ -10,7 +10,7 @@ interface FormInputProps {
 export const FormInput = ({label, children, props}: FormInputProps) => {
   return (
     <div className="grid w-full items-center gap-1.5">
-      <Label className='text-white' {...props}>{label}</Label>
+      <Text {...props}>{label}</Text>
       {children}
     </div>
   )
