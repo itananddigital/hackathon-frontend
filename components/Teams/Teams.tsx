@@ -1,0 +1,232 @@
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { fetcher, postFetcher } from "@/lib/api/swrFetcher";
+import { getCookie } from "@/utils/cookies";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import useSWR, { KeyedMutator } from "swr";
+import useSWRMutation from "swr/mutation";
+import { handleErrorToast } from "../HandleError";
+import LoadingPage from "../LoadingPage";
+
+export interface Team {
+  id: string;
+  name: string;
+  team_leader: string;
+  description: string;
+  spots_left: number;
+  members: Array<{ id: number | string; user: string; avatar: string; role?: string }>;
+}
+
+type TeamsResponse = {
+  message: Team[];
+};
+
+export default function Teams() {
+  const { data, isLoading, mutate } = useSWR<TeamsResponse, Error>(
+    "/api/method/hackathon.API.teams.get_all_teams",
+    fetcher
+  );
+
+  if (isLoading) {
+    return <LoadingPage />
+  }
+
+  if (data && data.message) {
+    return <ListTeam data={data.message} mutate={mutate} />;
+  }
+}
+
+const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsResponse> }) => {
+  const [teamName, setTeamName] = useState("");
+  const currentUser = getCookie("email");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { trigger: addTeam, isMutating: isAdding } = useSWRMutation(
+    "/api/method/hackathon.API.teams.add_team",
+    postFetcher
+  );
+
+  const { trigger: joinTeam, isMutating: isJoining } = useSWRMutation(
+    "/api/method/hackathon.API.teams.join_team",
+    postFetcher
+  );
+
+  const createTeam = async () => {
+    if (!teamName || !currentUser) return;
+
+    const newTeam = {
+      team_name: teamName,
+      team_leader: currentUser,
+      members: [
+        {
+          user: currentUser,
+          role: "Admin",
+        },
+      ],
+    };
+
+    try {
+      await addTeam(newTeam);
+      mutate();
+      setIsDialogOpen(false);
+      toast("Team created successfully");
+      setTeamName("");
+    } catch (err) {
+      handleErrorToast(err);
+      console.error("Failed to add team:", err);
+    }
+  };
+
+  const handleJoinTeam = async (name: string) => {
+    if (!currentUser) return;
+
+    try {
+      await joinTeam({ team_name: name, user: currentUser });
+      mutate();
+      toast('Joined team successfully');
+    } catch (err) {
+      handleErrorToast(err);
+      console.error("Failed to join team:", err);
+    }
+  };
+
+  return (
+    <div className="px-4 md:px-12 space-y-6 min-h-screen">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
+          Available Teams
+        </h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="rounded-full">
+              <Plus className="mr-2 h-4 w-4" /> Create Team
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-lg md:text-xl">
+                Create a New Team
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Team Name</label>
+                <Input
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  placeholder="Enter team name"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={createTeam} disabled={isAdding}>
+                {isAdding ? "Creating..." : "Create Team"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {data?.map((team, index) => (
+          <Card key={index} className="p-3 md:p-4">
+            <CardHeader className="p-0">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                <div className="flex items-start space-x-3 md:space-x-4">
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        `${process.env.BASE_URL}/${team.members[0]?.avatar}` ||
+                        `https://avatar.iran.liara.run/public/${index + 10}`
+                      }
+                    />
+                    <AvatarFallback>{team.team_leader.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-0">
+                    <CardTitle className="text-md md:text-lg font-semibold">
+                      {team.name}
+                    </CardTitle>
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Led by {team.team_leader}
+                    </p>
+                  </div>
+                </div>
+                <Badge
+                  variant={team.members.length >= 4 ? "destructive" : "default"}
+                  className="rounded-full px-2 py-1 text-xs"
+                >
+                  {6 - team.members.length} spot
+                  {team.members.length !== 1 ? "s" : ""} left
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-3 md:pt-4 p-0">
+              <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
+                {team.description}
+              </p>
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <TooltipProvider>
+                  <div className="flex -space-x-2">
+                    {team.members.map((member, index) => (
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <Avatar>
+                            <AvatarImage
+                              src={
+                                `${process.env.BASE_URL}/${member.avatar}` ||
+                                "https://avatar.iran.liara.run/public/boy"
+                              }
+                            />
+                            <AvatarFallback>
+                              {member.user.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent>{member.user}</TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </TooltipProvider>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => handleJoinTeam(team.name)}
+                  disabled={isJoining}
+                  className="w-full sm:w-auto"
+                >
+                  Join Team
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
