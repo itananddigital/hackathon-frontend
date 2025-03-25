@@ -69,7 +69,7 @@ export function LoginForm({
       setCookie('email', data?.message?.email);
       setCookie('full_name', data?.full_name);
       setCookie('avatar', data?.message?.avatar);
-      router.push('/');
+      router.push('/dashboard');
     }
     catch (error) {
       console.error(error)

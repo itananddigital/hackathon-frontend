@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
       removeCookie('sid');
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error.response?.data);
   }
 );
 

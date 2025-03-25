@@ -153,7 +153,7 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((team, index) => (
           <Card key={index} className="p-3 md:p-4">
             <CardHeader className="p-0">
