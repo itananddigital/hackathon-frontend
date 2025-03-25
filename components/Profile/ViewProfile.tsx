@@ -149,9 +149,9 @@ const ViewProfile = ({ data, mutate }: { data: any; mutate: KeyedMutator<any> })
                 </Button>
                 <Button
                   onClick={uploadAvatar}
-                  disabled={!avatarFile || isMutating}
+                  loading={!avatarFile || isMutating}
                 >
-                  {isMutating ? 'Uploading...' : 'Upload'}
+                  Upload
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -205,8 +205,8 @@ const ViewProfile = ({ data, mutate }: { data: any; mutate: KeyedMutator<any> })
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={updateDoc}>
-          {updateDoc ? 'Saving...' : 'Save Changes'}
+        <Button onClick={handleSave} loading={updateDoc}>
+          Save Changes
         </Button>
       </div>
     </div>

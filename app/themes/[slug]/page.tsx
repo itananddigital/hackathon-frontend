@@ -64,7 +64,7 @@ const ThemeDetails = ({ data }: { data: Theme }) => {
           <Badge className="mb-2 bg-blue-500">Featured</Badge>
           <h2 className="text-md font-bold">{data.title}</h2>
           <p className="mt-2">{data.description}</p>
-          <Button className="mt-4" onClick={selectTheme} disabled={isMutating}>
+          <Button className="mt-4" onClick={selectTheme} loading={isMutating}>
             🚀 Join Project
           </Button>
         </CardContent>

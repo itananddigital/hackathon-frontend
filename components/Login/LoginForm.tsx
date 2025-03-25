@@ -54,7 +54,7 @@ export function LoginForm({
   const [password, setpassword] = useState('')
   const router = useRouter()
 
-  const { trigger, error } = useSWRMutation(
+  const { trigger, error, isMutating } = useSWRMutation(
     '/api/method/hackathon.API.api_login.login',
     loginFetcher
   );
@@ -63,6 +63,7 @@ export function LoginForm({
     e.preventDefault()
     try {
       const data = await trigger({ usr: email, pwd: password })
+      if(data?.message?.success_key === 1) {
       setCookie('sid', data?.message?.sid);
       setCookie('token', data?.message?.api_secret.token);
       setCookie('api_key', data?.message?.api_key);
@@ -70,6 +71,7 @@ export function LoginForm({
       setCookie('full_name', data?.full_name);
       setCookie('avatar', data?.message?.avatar);
       router.push('/dashboard');
+      }
     }
     catch (error) {
       console.error(error)
@@ -107,7 +109,7 @@ export function LoginForm({
                 </FormInput>
                 {error && <div className="text-red-500">Username or Password is incorrect</div>}
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" loading={isMutating}>
                 Login
               </Button>
               <div className="text-center text-sm text-muted-foreground">
