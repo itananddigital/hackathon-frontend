@@ -27,6 +27,7 @@ export default function RegisterForm() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,10 +58,11 @@ export default function RegisterForm() {
       if (response.status === 200) {
         router.push('/login');
       } else {
-        console.error(response);
+        console.log(response);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.log(error);
+      setFormError(error?.message?.message || 'Something went wrong');
     }
     setLoading(false);
   };
@@ -139,6 +141,7 @@ export default function RegisterForm() {
                     required
                   />
                 </FormInput>
+              {formError && <div className="text-red-500">{formError}</div>}
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>

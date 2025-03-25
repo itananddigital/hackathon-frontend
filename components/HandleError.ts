@@ -7,8 +7,8 @@ export const handleErrorToast = (
   let title = defaultMessage;
   let description = '';
 
-  if (err?.response?.data) {
-    const responseData = err.response.data;
+  if (err) {
+    const responseData = err;
 
     let parsedData = responseData;
     if (typeof responseData === 'string') {

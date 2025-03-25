@@ -42,6 +42,7 @@ export function NavUser() {
     removeCookie('sid');
     removeCookie('token');
     removeCookie('api_key');
+    removeCookie('avatar');
     setCookie('full_name', 'Guest');
     redirect('/');
   };
