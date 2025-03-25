@@ -1,12 +1,13 @@
-import { removeCookie } from '@/utils/cookies';
+import { getCookie, removeCookie } from '@/utils/cookies';
 import axios from 'axios';
 
+const token = getCookie('token');
 const axiosInstance = axios.create({
   baseURL: process.env.ENV === 'production' ? process.env.BASE_URL : 'http://localhost:8002',
   headers: {
     'Content-Type': 'application/json',
+    "Authorization": `token ${token}`,
   },
-  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
@@ -21,6 +22,7 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status === 401 || error.response?.status === 403) {
       removeCookie('sid');
+      removeCookie('token');
     }
 
     return Promise.reject(error.response?.data);
