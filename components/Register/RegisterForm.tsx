@@ -12,12 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { axiosInstance } from '@/lib/api/axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormInput } from '../Common/FormInput';
 import { PasswordInput } from '../ui/PasswordInput';
+import useSWRMutation from 'swr/mutation';
+import { postFetcher } from '@/lib/api/swrFetcher';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -26,7 +27,6 @@ export default function RegisterForm() {
     email: '',
     password: '',
   });
-  const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
   const router = useRouter();
 
@@ -44,27 +44,25 @@ export default function RegisterForm() {
     }));
   };
 
+  const { trigger, isMutating} = useSWRMutation(
+    '/api/method/hackathon.API.register_api.register',
+    postFetcher,
+  );
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      const response = await axiosInstance.post('/api/method/hackathon.API.register_api.register', {
+      await trigger({
         email: formData.email,
         pwd: formData.password,
         first_name: formData.name,
         role: formData.role,
       });
 
-      if (response.status === 200) {
-        router.push('/login');
-      } else {
-        console.log(response);
-      }
+      router.push('/login');
     } catch (error: any) {
-      console.log(error);
       setFormError(error?.message?.message || 'Something went wrong');
     }
-    setLoading(false);
   };
 
   return (
@@ -144,8 +142,8 @@ export default function RegisterForm() {
               {formError && <div className="text-red-500">{formError}</div>}
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Registering...' : 'Register'}
+              <Button type="submit" className="w-full" loading={isMutating}>
+                Register
               </Button>
             </form>
 

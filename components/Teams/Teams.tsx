@@ -145,8 +145,8 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={createTeam} disabled={isAdding}>
-                {isAdding ? "Creating..." : "Create Team"}
+              <Button onClick={createTeam} loading={isAdding}>
+                Create Team
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -217,7 +217,7 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                   variant="secondary"
                   size="sm"
                   onClick={() => handleJoinTeam(team.name)}
-                  disabled={isJoining}
+                  loading={isJoining}
                   className="w-full sm:w-auto"
                 >
                   Join Team

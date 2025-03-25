@@ -95,7 +95,6 @@ const SubmissionForm = () => {
                 placeholder="Enter your project title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                disabled={isMutating}
                 required
               />
             </div>
@@ -108,7 +107,6 @@ const SubmissionForm = () => {
                 placeholder="https://github.com/username/repository"
                 value={githubLink}
                 onChange={(e) => setGithubLink(e.target.value)}
-                disabled={isMutating}
                 required
               />
             </div>
@@ -126,7 +124,6 @@ const SubmissionForm = () => {
                   accept="image/*,video/*"
                   multiple
                   onChange={handleFileChange}
-                  disabled={isMutating}
                   className="hidden"
                 />
                 <Upload className="mx-auto h-5 w-5" />
@@ -178,16 +175,15 @@ const SubmissionForm = () => {
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={isMutating}
               />
             </div>
 
             <Button
               type="submit"
               className="w-full"
-              disabled={isMutating || !githubLink || !title}
+              loading={isMutating || !githubLink || !title}
             >
-              {isMutating ? 'Submitting...' : 'Submit Project'}
+              Submit Project
             </Button>
           </form>
         </CardContent>
