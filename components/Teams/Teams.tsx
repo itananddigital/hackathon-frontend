@@ -28,6 +28,7 @@ import useSWR, { KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { handleErrorToast } from "../HandleError";
 import LoadingPage from "../LoadingPage";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface Team {
   id: string;
@@ -110,19 +111,26 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
       console.error("Failed to join team:", err);
     }
   };
+  const isMobile = useIsMobile()
 
   return (
     <div className="px-4 md:px-12 space-y-6 min-h-screen">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="flex flex-row sm:flex-row justify-between items-center gap-4">
         <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
           Available Teams
         </h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="rounded-full">
-              <Plus className="mr-2 h-4 w-4" /> Create Team
-            </Button>
+            {isMobile ? (
+              <Button size='icon'>
+                <Plus />
+              </Button>
+            ) : (
+              <Button className="rounded-full">
+                <Plus className="mr-2 h-4 w-4" /> Create Team
+              </Button>
+            )}
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -142,16 +150,31 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={createTeam} loading={isAdding}>
-                Create Team
-              </Button>
+              <div className="flex justify-end space-x-4">
+                <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={createTeam} loading={isAdding}>
+                  Create Team
+                </Button>
+              </div>
+
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
+      {
+        data?.length === 0 && (
+          <div className="flex flex-col items-center justify-center space-y-4 h-96">
+            <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
+              No teams available
+            </h1>
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Create a Team
+            </Button>
+          </div>
+        )
+      }
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((team, index) => (
@@ -179,10 +202,9 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                 </div>
                 <Badge
                   variant={team.members.length >= 4 ? "destructive" : "default"}
-                  className="rounded-full px-2 py-1 text-xs"
+                  className="rounded-full text-xs"
                 >
-                  {6 - team.members.length} spot
-                  {team.members.length !== 1 ? "s" : ""} left
+                  {6 - team.members.length} spot left
                 </Badge>
               </div>
             </CardHeader>
@@ -213,15 +235,20 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                     ))}
                   </div>
                 </TooltipProvider>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleJoinTeam(team.name)}
-                  loading={isJoining}
-                  className="w-full sm:w-auto"
-                >
-                  Join Team
-                </Button>
+                {
+                  team.members.length !== 5 && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleJoinTeam(team.name)}
+                      loading={isJoining}
+                      className="w-full sm:w-auto"
+                    >
+                      Join Team
+                    </Button>
+                  )
+                }
+
               </div>
             </CardContent>
           </Card>
