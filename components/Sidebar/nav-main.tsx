@@ -7,7 +7,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 
@@ -24,6 +25,8 @@ export function NavMain({
     }[]
   }[]
 }) {
+
+  const { setOpenMobile } = useSidebar();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Hackathon</SidebarGroupLabel>
@@ -31,7 +34,7 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton tooltip={item.title} asChild>
-              <Link href={item.url}>
+              <Link href={item.url} onClick={() => setOpenMobile(false)}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </Link>

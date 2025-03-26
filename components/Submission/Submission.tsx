@@ -181,7 +181,7 @@ const SubmissionForm = () => {
             <Button
               type="submit"
               className="w-full"
-              loading={isMutating || !githubLink || !title}
+              loading={isMutating}
             >
               Submit Project
             </Button>
