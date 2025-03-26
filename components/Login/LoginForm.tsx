@@ -1,21 +1,22 @@
-'use client'
-import { Button } from "@/components/ui/button"
+'use client';
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { axiosInstance } from "@/lib/api/axios"
-import { cn } from "@/lib/utils"
-import { setCookie } from "@/utils/cookies"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import useSWRMutation from "swr/mutation"
-import { FormInput } from "../Common/FormInput"
-import { PasswordInput } from "../ui/PasswordInput"
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { axiosInstance } from "@/lib/api/axios";
+import { cn } from "@/lib/utils";
+import { setCookie } from "@/utils/cookies";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm, FormProvider } from "react-hook-form";
+import useSWRMutation from "swr/mutation";
+import { FormInput } from "../Common/FormInput";
+import { PasswordInput } from "../ui/PasswordInput";
 
 interface LoginCredentials {
   usr: string;
@@ -45,42 +46,62 @@ const loginFetcher = async (
   return response.data;
 };
 
+interface FormData {
+  email: string;
+  password: string;
+}
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState('')
-  const [password, setpassword] = useState('')
-  const router = useRouter()
+  const router = useRouter();
 
-  const { trigger, error, isMutating } = useSWRMutation(
+  const methods = useForm<FormData>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    mode: 'onSubmit',
+    resolver: async (data) => {
+      const errors: any = {};
+
+      if (!data.email) {
+        errors.email = { message: 'Email is required' };
+      } else if (!/^\S+@\S+\.\S+$/.test(data.email)) {
+        errors.email = { message: 'Invalid email format' };
+      }
+
+      if (!data.password) {
+        errors.password = { message: 'Password is required' };
+      }
+
+      return { values: data, errors };
+    },
+  });
+  const { trigger, isMutating } = useSWRMutation(
     '/api/method/hackathon.API.api_login.login',
     loginFetcher
   );
 
-  const handlesubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: FormData) => {
     try {
-      const data = await trigger({ usr: email, pwd: password })
-      if(data?.message?.success_key === 1) {
-      setCookie('sid', data?.message?.sid);
-      setCookie('token', data?.message?.api_secret.token);
-      setCookie('api_key', data?.message?.api_key);
-      setCookie('email', data?.message?.email);
-      setCookie('full_name', data?.full_name);
-      setCookie('avatar', data?.message?.avatar);
-      router.push('/dashboard');
+      const response = await trigger({ usr: data.email, pwd: data.password });
+      if (response?.message?.success_key === 1) {
+        setCookie('sid', response.message.sid);
+        setCookie('token', response.message.api_secret.token);
+        setCookie('api_key', response.message.api_key);
+        setCookie('email', response.message.email);
+        setCookie('full_name', response.full_name);
+        setCookie('avatar', response.message.avatar);
+        router.push('/dashboard');
       }
+    } catch (error: any) {
+      methods.setError('root.serverError', {
+        message: 'Username or Password is incorrect',
+      });
     }
-    catch (error) {
-      console.error(error)
-    }
-  }
-  function handeChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.id === 'email') setEmail(e.target.value)
-    if (e.target.id === 'password') setpassword(e.target.value)
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -89,39 +110,45 @@ export function LoginForm({
           <CardTitle className="text-xl">Welcome back</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handlesubmit}>
-            <div className="grid gap-6">
-              <div className="grid gap-4">
-                <FormInput label='Email'>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    onChange={handeChange}
-                    value={email}
-                  />
-                </FormInput>
-                <FormInput label="Password">
-                  <PasswordInput id="password" required
-                    onChange={handeChange}
-                    value={password} />
-                </FormInput>
-                {error && <div className="text-red-500">Username or Password is incorrect</div>}
+          <FormProvider {...methods}>
+            <form onSubmit={methods.handleSubmit(onSubmit)}>
+              <div className="grid gap-6">
+                <div className="grid gap-4">
+                  <FormInput label="Email" name="email" isRequired>
+                    <Input
+                      type="email"
+                      placeholder="m@example.com"
+                      className="w-full"
+                    />
+                  </FormInput>
+                  <FormInput label="Password" name="password" isRequired>
+                    <PasswordInput placeholder="Enter password" />
+                  </FormInput>
+                  {methods.formState.errors.root?.serverError && (
+                    <p className=" text-sm text-red-500">
+                      {methods.formState.errors.root.serverError.message}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isMutating}
+                  loading={isMutating}
+                >
+                  Login
+                </Button>
+                <div className="text-center text-sm text-muted-foreground">
+                  Don&apos;t have an account?{" "}
+                  <Link href="/register" className="underline hover:text-primary">
+                    Sign up
+                  </Link>
+                </div>
               </div>
-              <Button type="submit" className="w-full" loading={isMutating}>
-                Login
-              </Button>
-              <div className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="underline hover:text-primary">
-                  Sign up
-                </Link>
-              </div>
-            </div>
-          </form>
+            </form>
+          </FormProvider>
         </CardContent>
       </Card>
-    </div >
-  )
+    </div>
+  );
 }
