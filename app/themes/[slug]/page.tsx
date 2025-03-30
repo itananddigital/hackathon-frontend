@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Calendar, Users, Star } from 'lucide-react';
 import LoadingPage from '@/components/LoadingPage';
 import { toast } from 'sonner';
+import { CONSTANTS } from '@/lib/api/app-config';
 
 const Themes = () => {
   const { slug } = useParams();
@@ -58,7 +59,7 @@ const ThemeDetails = ({ data }: { data: Theme }) => {
     <div className="px-4 md:px-12 ">
       <Card
         className="mb-8 p-6 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${process.env.BASE_URL}/${data.thumbnail})` }}
+        style={{ backgroundImage: `url(${CONSTANTS.API_BASE_URL}/${data.thumbnail})` }}
       >
         <CardContent className="mt-4 md:mt-40">
           <Badge className="mb-2 bg-blue-500">Featured</Badge>

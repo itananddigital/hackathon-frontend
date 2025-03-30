@@ -4,8 +4,6 @@
  * @returns The cookie value or empty string if not found
  */
 export function getCookie(name: string): string {
-    // Check if we're on the server side
-    if (typeof document === 'undefined') return '';
     
     const cookieValue = document.cookie
       .split('; ')
@@ -22,7 +20,6 @@ export function getCookie(name: string): string {
    * @param days Number of days until the cookie expires (default: 30)
    */
   export function setCookie(name: string, value: string, days: number = 30): void {
-    if (typeof document === 'undefined') return;
     
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + days);

@@ -29,6 +29,7 @@ import useSWRMutation from "swr/mutation";
 import { handleErrorToast } from "../HandleError";
 import LoadingPage from "../LoadingPage";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CONSTANTS } from "@/lib/api/app-config";
 
 export interface Team {
   id: string;
@@ -114,7 +115,7 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
   const isMobile = useIsMobile()
 
   return (
-    <div className="px-4 md:px-12 space-y-6 min-h-screen">
+    <div className="inline-padding space-y-6 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-row sm:flex-row justify-between items-center gap-4">
         <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
@@ -185,7 +186,7 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                   <Avatar>
                     <AvatarImage
                       src={
-                        `${process.env.BASE_URL}/${team.members[0]?.avatar}` ||
+                        `${CONSTANTS.API_BASE_URL}/${team.members[0]?.avatar}` ||
                         `https://avatar.iran.liara.run/public/${index + 10}`
                       }
                     />
@@ -221,7 +222,7 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                           <Avatar>
                             <AvatarImage
                               src={
-                                `${process.env.BASE_URL}/${member.avatar}` ||
+                                `${CONSTANTS.API_BASE_URL}/${member.avatar}` ||
                                 "https://avatar.iran.liara.run/public/boy"
                               }
                             />

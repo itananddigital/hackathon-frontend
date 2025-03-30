@@ -78,7 +78,7 @@ const SubmissionForm = () => {
   };
 
   return (
-    <div className="px-4 md:px-12">
+    <div className="inline-padding">
       <h1 className="text-xl font-bold">Project Submission</h1>
       <p className="mt-2">
         Submit your project for the hackathon before the deadline: <strong>March 15, 2025</strong>

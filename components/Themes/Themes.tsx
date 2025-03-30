@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import LoadingPage from "../LoadingPage";
+import { CONSTANTS } from "@/lib/api/app-config";
 
 const Themes = () => {
     const router = useRouter();
@@ -30,7 +31,7 @@ const Themes = () => {
         const otherProjects = data.message.slice(1);
 
         return (
-            <div className="px-4 md:px-12">
+            <div className="inline-padding">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                     <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
                         Available Projects
@@ -40,7 +41,7 @@ const Themes = () => {
                 <Card
                     className="mb-8 p-6  shadow-xl bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: `url(${process.env.BASE_URL}/${encodeURI(featuredProject.thumbnail)})`,
+                        backgroundImage: `url(${CONSTANTS.API_BASE_URL}/${encodeURI(featuredProject.thumbnail)})`,
                     }}
                 >
                     <CardContent className="mt-4 md:mt-40">
@@ -67,13 +68,13 @@ const Themes = () => {
                         ) => (
                             <Card
                                 key={index}
-                                className=" shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                                className="shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer pt-0 overflow-hidden"
                                 onClick={() => router.push(`/themes/${project.title}`)}
                             >
                                 <Image
-                                    src={encodeURI(`${process.env.BASE_URL}/${project.thumbnail}`)}
+                                    src={encodeURI(`${CONSTANTS.API_BASE_URL}/${project.thumbnail}`)}
                                     alt={project.title}
-                                    width={400} // Adjust based on your needs
+                                    width={400}
                                     height={200}
                                     className="w-full h-[200px] object-cover"
                                 />
