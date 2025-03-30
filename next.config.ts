@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
+import { CONSTANTS } from "./lib/api/app-config";
 
 const nextConfig: NextConfig = {
   env: {
-    BASE_URL: process.env.BASE_URL,
-    ENV: process.env.ENV,
+    BASE_URL: CONSTANTS.API_BASE_URL,
   },
   images: {
     remotePatterns: [

@@ -24,6 +24,7 @@ import useSWRMutation from 'swr/mutation';
 import { FormInput } from '../Common/FormInput';
 import { Textarea } from '../ui/textarea';
 import { useState } from 'react';
+import { CONSTANTS } from '@/lib/api/app-config';
 
 interface FormData {
   firstName: string;
@@ -84,7 +85,7 @@ const ViewProfile = ({
   );
   const { trigger: uploadCall, isMutating } = useUpload();
 
-  const avatarUrl = encodeURI(`${process.env.BASE_URL}/${data.user_image}`);
+  const avatarUrl = encodeURI(`${CONSTANTS.API_BASE_URL}/${data.user_image}`);
 
   const onSubmit = async (formData: FormData) => {
     try {

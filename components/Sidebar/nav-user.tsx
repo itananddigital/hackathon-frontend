@@ -28,6 +28,7 @@ import {
 import { getCookie, removeCookie, setCookie } from "@/utils/cookies"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import { CONSTANTS } from "@/lib/api/app-config"
 
 export function NavUser() {
 
@@ -36,7 +37,7 @@ export function NavUser() {
   const name = decodeURIComponent(fullname) ?? ''
   const email = getCookie('email')
   const avatar = getCookie('avatar')
-  const avatarURL = `${process.env.BASE_URL}${avatar}`
+  const avatarURL = `${CONSTANTS.API_BASE_URL}${avatar}`
 
   const logout = () => {
     removeCookie('sid');
