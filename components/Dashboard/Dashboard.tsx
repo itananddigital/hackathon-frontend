@@ -19,7 +19,7 @@ interface SectionProps {
 
 const Section = ({ title, description, icon: Icon, children, scrollYProgress }: SectionProps) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { margin: "-100px" });
+  const isInView = useInView(ref, { margin: "-100px", once: true });
 
   // Parallax effect: transform scroll progress into y movement
   const yParallax = useTransform(scrollYProgress, [0, 1], [-50, 50]); // Foreground moves more
