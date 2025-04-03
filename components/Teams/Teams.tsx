@@ -30,6 +30,7 @@ import { handleErrorToast } from "../HandleError";
 import LoadingPage from "../LoadingPage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CONSTANTS } from "@/lib/api/app-config";
+import { useScroll , motion} from "framer-motion";
 
 export interface Team {
   id: string;
@@ -61,6 +62,7 @@ export default function Teams() {
 
 const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsResponse> }) => {
   const [teamName, setTeamName] = useState("");
+  const { scrollYProgress } = useScroll();
   const currentUser = getCookie("email");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -116,6 +118,10 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
 
   return (
     <div className="inline-padding space-y-6 min-h-screen">
+       <motion.div
+        style={{ scaleX: scrollYProgress }}
+        className="fixed top-0 left-0 w-full h-1 bg-primary origin-left z-50"
+      />
       {/* Header Section */}
       <div className="flex flex-row sm:flex-row justify-between items-center gap-4">
         <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
