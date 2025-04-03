@@ -73,6 +73,7 @@ const PublicNav = ({ path }: { path: string }) => (
         <span className="font-bold text-xl">Hackathon</span>
       </Link>
       <div className="flex items-center gap-4">
+      <ThemeToggle />
         {(path === "/" || path === "/register") && (
           <Link href="/login">
             <Button variant={path === "/" ? "ghost" : "default"} size="sm">

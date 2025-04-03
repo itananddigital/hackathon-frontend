@@ -15,9 +15,11 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import LoadingPage from "../LoadingPage";
 import { CONSTANTS } from "@/lib/api/app-config";
+import { useScroll, motion } from "framer-motion";
 
 const Themes = () => {
     const router = useRouter();
+    const { scrollYProgress } = useScroll();
     const { data, error, isLoading } = useSWR(
         "/api/method/hackathon.API.themes.get_all_themes",
         fetcher
@@ -32,6 +34,10 @@ const Themes = () => {
 
         return (
             <div className="inline-padding">
+                <motion.div
+                    style={{ scaleX: scrollYProgress }}
+                    className="fixed top-0 left-0 w-full h-1 bg-primary origin-left z-50"
+                />
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                     <h1 className="text-xl md:text-2xl font-bold text-center sm:text-left">
                         Available Projects
