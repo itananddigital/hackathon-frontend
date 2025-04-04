@@ -22,7 +22,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { fetcher, postFetcher } from "@/lib/api/swrFetcher";
 import { getCookie } from "@/utils/cookies";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import useSWR, { KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
@@ -30,7 +30,7 @@ import { handleErrorToast } from "../HandleError";
 import LoadingPage from "../LoadingPage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CONSTANTS } from "@/lib/api/app-config";
-import { useScroll , motion} from "framer-motion";
+import { useScroll, motion } from "framer-motion";
 
 export interface Team {
   id: string;
@@ -116,9 +116,15 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
   };
   const isMobile = useIsMobile()
 
+  const userActions = useMemo(() => {
+    return data.some((team) => {
+      return team.members.some((member) => member.user === currentUser)
+    })
+  }, [])
+
   return (
     <div className="inline-padding space-y-6 min-h-screen">
-       <motion.div
+      <motion.div
         style={{ scaleX: scrollYProgress }}
         className="fixed top-0 left-0 w-full h-1 bg-primary origin-left z-50"
       />
@@ -185,81 +191,81 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((team, index) => (
-          <Card key={index} className="p-3 md:p-4">
-            <CardHeader className="p-0">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
-                <div className="flex items-start space-x-3 md:space-x-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={
-                        `${CONSTANTS.API_BASE_URL}/${team.members[0]?.avatar}` ||
-                        `https://avatar.iran.liara.run/public/${index + 10}`
-                      }
-                    />
-                    <AvatarFallback>{team.team_leader.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-0">
-                    <CardTitle className="text-md md:text-lg font-semibold">
-                      {team.name}
-                    </CardTitle>
-                    <p className="text-xs md:text-sm text-muted-foreground">
-                      Led by {team.team_leader}
-                    </p>
+            <Card key={index} className="p-3 md:p-4">
+              <CardHeader className="p-0">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                  <div className="flex items-start space-x-3 md:space-x-4">
+                    <Avatar>
+                      <AvatarImage
+                        src={
+                          `${CONSTANTS.API_BASE_URL}/${team.members[0]?.avatar}` ||
+                          `https://avatar.iran.liara.run/public/${index + 10}`
+                        }
+                      />
+                      <AvatarFallback>{team.team_leader.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-0">
+                      <CardTitle className="text-md md:text-lg font-semibold">
+                        {team.name}
+                      </CardTitle>
+                      <p className="text-xs md:text-sm text-muted-foreground">
+                        Led by {team.team_leader}
+                      </p>
+                    </div>
                   </div>
+                  <Badge
+                    variant={team.members.length >= 4 ? "destructive" : "default"}
+                    className="rounded-full text-xs"
+                  >
+                    {6 - team.members.length} spot left
+                  </Badge>
                 </div>
-                <Badge
-                  variant={team.members.length >= 4 ? "destructive" : "default"}
-                  className="rounded-full text-xs"
-                >
-                  {6 - team.members.length} spot left
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-3 md:pt-4 p-0">
-              <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
-                {team.description}
-              </p>
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <TooltipProvider>
-                  <div className="flex -space-x-2">
-                    {team.members.map((member, index) => (
-                      <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                          <Avatar>
-                            <AvatarImage
-                              src={
-                                `${CONSTANTS.API_BASE_URL}/${member.avatar}` ||
-                                "https://avatar.iran.liara.run/public/boy"
-                              }
-                            />
-                            <AvatarFallback>
-                              {member.user.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </TooltipTrigger>
-                        <TooltipContent>{member.user}</TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </div>
-                </TooltipProvider>
-                {
-                  team.members.length !== 5 && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleJoinTeam(team.name)}
-                      loading={isJoining}
-                      className="w-full sm:w-auto"
-                    >
-                      Join Team
-                    </Button>
-                  )
-                }
+              </CardHeader>
+              <CardContent className="pt-3 md:pt-4 p-0">
+                <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
+                  {team.description}
+                </p>
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                  <TooltipProvider>
+                    <div className="flex -space-x-2">
+                      {team.members.map((member, index) => (
+                        <Tooltip key={index}>
+                          <TooltipTrigger asChild>
+                            <Avatar>
+                              <AvatarImage
+                                src={
+                                  `${CONSTANTS.API_BASE_URL}/${member.avatar}` ||
+                                  "https://avatar.iran.liara.run/public/boy"
+                                }
+                              />
+                              <AvatarFallback>
+                                {member.user.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </TooltipTrigger>
+                          <TooltipContent>{member.user}</TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
+                  </TooltipProvider>
+                  {
+                    team.members.length < 5 && !userActions && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleJoinTeam(team.name)}
+                        loading={isJoining}
+                        className="w-full sm:w-auto"
+                      >
+                        Join Team
+                      </Button>
+                    )
+                  }
 
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
       </div>
     </div>
   );
