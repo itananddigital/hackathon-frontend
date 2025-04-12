@@ -94,7 +94,7 @@ export function LoginForm({
         setCookie('email', response.message.email);
         setCookie('full_name', response.full_name);
         setCookie('avatar', response.message.avatar);
-        router.push('/dashboard');
+        router.push('/about');
       }
     } catch (error: any) {
       methods.setError('root.serverError', {

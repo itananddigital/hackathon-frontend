@@ -2,6 +2,7 @@ import {
   BookOpen,
   Bot,
   Folder,
+  Info,
   LayoutDashboard
 } from "lucide-react"
 import * as React from "react"
@@ -20,10 +21,15 @@ import {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navMain = [
     {
+      title: "About",
+      url: "/about",
+      icon: Info,
+      isActive: true,
+    },
+    {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
-      isActive: true,
     },
     {
       title: "Teams",
