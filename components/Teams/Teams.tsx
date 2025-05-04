@@ -35,10 +35,18 @@ import { useScroll, motion } from "framer-motion";
 export interface Team {
   id: string;
   name: string;
+  team_name: string;
   team_leader: string;
-  description: string;
-  spots_left: number;
-  members: Array<{ id: number | string; user: string; avatar: string; role?: string }>;
+  themes: string;
+  members: Member[];
+}
+
+export interface Member {
+  id: number | string;
+  user: string;
+  avatar: string;
+  role: string;
+  full_name: string
 }
 
 type TeamsResponse = {
@@ -222,9 +230,6 @@ const ListTeam = ({ data, mutate }: { data: Team[]; mutate: KeyedMutator<TeamsRe
                 </div>
               </CardHeader>
               <CardContent className="pt-3 md:pt-4 p-0">
-                <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 line-clamp-2">
-                  {team.description}
-                </p>
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
                   <TooltipProvider>
                     <div className="flex -space-x-2">
