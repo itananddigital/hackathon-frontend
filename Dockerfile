@@ -1,4 +1,4 @@
-FROM node:20 AS build
+FROM node:20 AS builder
 # Set the working directory in the container
 WORKDIR /app
 # Copy package.json and package-lock.json
