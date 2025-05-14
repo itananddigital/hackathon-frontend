@@ -1,4 +1,5 @@
-FROM node:20 AS build
+FROM gcr.io/distroless/nodejs:18
+#FROM node:20 AS build
 # Set the working directory in the container
 WORKDIR /app
 # Copy package.json and package-lock.json
